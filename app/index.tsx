@@ -42,7 +42,6 @@ const CONTACT_METHODS = [
   "Text message",
   "Phone call",
   "Email",
-  "Social media",
   "In person",
   "Video call",
 ];
@@ -290,6 +289,8 @@ function FriendModal({
   const [name, setName] = useState("");
   const [contactMethod, setContactMethod] = useState(CONTACT_METHODS[0]);
   const [frequencyDays, setFrequencyDays] = useState(FREQUENCY_OPTIONS[2].days); // Default to weekly
+  const [customDays, setCustomDays] = useState("");
+  const [isCustomSelected, setIsCustomSelected] = useState(false);
 
   // Reset form when modal opens/closes or editing friend changes
   useEffect(() => {
@@ -297,14 +298,60 @@ function FriendModal({
       if (editingFriend) {
         setName(editingFriend.name);
         setContactMethod(editingFriend.contactMethod);
-        setFrequencyDays(editingFriend.frequencyDays);
+
+        // Check if the frequency matches a predefined option
+        const predefinedOption = FREQUENCY_OPTIONS.find(
+          (opt) => opt.days === editingFriend.frequencyDays,
+        );
+        if (predefinedOption) {
+          setFrequencyDays(editingFriend.frequencyDays);
+          setIsCustomSelected(false);
+          setCustomDays("");
+        } else {
+          // It's a custom frequency
+          setFrequencyDays(editingFriend.frequencyDays);
+          setIsCustomSelected(true);
+          setCustomDays(editingFriend.frequencyDays.toString());
+        }
       } else {
         setName("");
         setContactMethod(CONTACT_METHODS[0]);
         setFrequencyDays(FREQUENCY_OPTIONS[2].days);
+        setIsCustomSelected(false);
+        setCustomDays("");
       }
     }
   }, [visible, editingFriend]);
+
+  /**
+   * Handle selecting a predefined frequency option
+   */
+  const handleFrequencySelect = (days: number) => {
+    setFrequencyDays(days);
+    setIsCustomSelected(false);
+    setCustomDays("");
+  };
+
+  /**
+   * Handle selecting custom frequency option
+   */
+  const handleCustomSelect = () => {
+    setIsCustomSelected(true);
+    if (customDays && !isNaN(parseInt(customDays))) {
+      setFrequencyDays(parseInt(customDays));
+    }
+  };
+
+  /**
+   * Handle custom days input change
+   */
+  const handleCustomDaysChange = (text: string) => {
+    setCustomDays(text);
+    const days = parseInt(text);
+    if (!isNaN(days) && days > 0) {
+      setFrequencyDays(days);
+    }
+  };
 
   /**
    * Handle saving the friend
@@ -315,11 +362,24 @@ function FriendModal({
       return;
     }
 
+    // Validate custom days if custom option is selected
+    if (isCustomSelected) {
+      const days = parseInt(customDays);
+      if (!customDays || isNaN(days) || days <= 0) {
+        Alert.alert(
+          "Error",
+          "Please enter a valid number of days (greater than 0)",
+        );
+        return;
+      }
+      setFrequencyDays(days);
+    }
+
     const friend: Friend = {
       id: editingFriend?.id || Date.now().toString(),
       name: name.trim(),
       contactMethod,
-      frequencyDays,
+      frequencyDays: isCustomSelected ? parseInt(customDays) : frequencyDays,
       lastContactDate:
         editingFriend?.lastContactDate || new Date().toISOString(),
     };
@@ -330,10 +390,6 @@ function FriendModal({
   /**
    * Get frequency label from days
    */
-  const getFrequencyLabel = (days: number): string => {
-    const option = FREQUENCY_OPTIONS.find((opt) => opt.days === days);
-    return option?.label || `Every ${days} days`;
-  };
 
   return (
     <Modal
@@ -393,21 +449,59 @@ function FriendModal({
                 key={option.days}
                 style={[
                   styles.optionButton,
-                  frequencyDays === option.days && styles.selectedOption,
+                  !isCustomSelected &&
+                    frequencyDays === option.days &&
+                    styles.selectedOption,
                 ]}
-                onPress={() => setFrequencyDays(option.days)}
+                onPress={() => handleFrequencySelect(option.days)}
               >
                 <Text
                   style={[
                     styles.optionText,
-                    frequencyDays === option.days && styles.selectedOptionText,
+                    !isCustomSelected &&
+                      frequencyDays === option.days &&
+                      styles.selectedOptionText,
                   ]}
                 >
                   {option.label}
                 </Text>
               </TouchableOpacity>
             ))}
+
+            {/* Custom frequency option */}
+            <TouchableOpacity
+              style={[
+                styles.optionButton,
+                isCustomSelected && styles.selectedOption,
+              ]}
+              onPress={handleCustomSelect}
+            >
+              <Text
+                style={[
+                  styles.optionText,
+                  isCustomSelected && styles.selectedOptionText,
+                ]}
+              >
+                Custom
+              </Text>
+            </TouchableOpacity>
           </View>
+
+          {/* Custom days input - shown when custom is selected */}
+          {isCustomSelected && (
+            <View style={styles.customInputContainer}>
+              <Text style={styles.customInputLabel}>Every</Text>
+              <TextInput
+                style={styles.customDaysInput}
+                value={customDays}
+                onChangeText={handleCustomDaysChange}
+                placeholder="7"
+                keyboardType="numeric"
+                maxLength={4}
+              />
+              <Text style={styles.customInputLabel}>days</Text>
+            </View>
+          )}
         </ScrollView>
       </View>
     </Modal>
@@ -418,7 +512,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f5f5f5",
-    paddingTop: 50,
   },
   header: {
     flexDirection: "row",
@@ -600,5 +693,24 @@ const styles = StyleSheet.create({
   selectedOptionText: {
     color: "white",
     fontWeight: "600",
+  },
+  customInputContainer: {
+    marginTop: 10,
+  },
+  customInputLabel: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#333",
+    marginBottom: 8,
+  },
+  customDaysInput: {
+    backgroundColor: "white",
+    borderRadius: 2,
+    paddingHorizontal: 1,
+    paddingVertical: 2,
+    fontSize: 16,
+    borderWidth: 1,
+    borderColor: "#e0e0e0",
+    textAlign: "left",
   },
 });
