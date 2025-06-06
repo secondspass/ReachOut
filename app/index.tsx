@@ -11,6 +11,7 @@ import {
   ScrollView,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import BackupModal from "./components/BackupModal";
 
 // Type definitions for our data structures
 interface Friend {
@@ -50,6 +51,7 @@ export default function App() {
   const [friends, setFriends] = useState<Friend[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [editingFriend, setEditingFriend] = useState<Friend | null>(null);
+  const [backupModalVisible, setBackupModalVisible] = useState(false);
 
   /**
    * Load friends data from AsyncStorage
@@ -175,6 +177,13 @@ export default function App() {
   };
 
   /**
+   * Handle data changes from backup operations
+   */
+  const handleBackupDataChanged = async () => {
+    await loadFriends();
+  };
+
+  /**
    * Render individual friend item in the list
    */
   const renderFriendItem = ({ item }: { item: Friend }) => {
@@ -228,9 +237,17 @@ export default function App() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Friend Contact Tracker</Text>
-        <TouchableOpacity style={styles.addButton} onPress={addNewFriend}>
-          <Text style={styles.addButtonText}>+</Text>
-        </TouchableOpacity>
+        <View style={styles.headerButtons}>
+          <TouchableOpacity
+            style={styles.backupButton}
+            onPress={() => setBackupModalVisible(true)}
+          >
+            <Text style={styles.backupButtonText}>⚙️</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.addButton} onPress={addNewFriend}>
+            <Text style={styles.addButtonText}>+</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       {friends.length === 0 ? (
@@ -265,6 +282,12 @@ export default function App() {
           setModalVisible(false);
         }}
         editingFriend={editingFriend}
+      />
+
+      <BackupModal
+        visible={backupModalVisible}
+        onClose={() => setBackupModalVisible(false)}
+        onDataChanged={handleBackupDataChanged}
       />
     </View>
   );
@@ -517,16 +540,24 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 20,
-    paddingVertical: 15,
+    paddingHorizontal: 5,
+    paddingTop: 50,
+    paddingVertical: 10,
     backgroundColor: "white",
     borderBottomWidth: 1,
     borderBottomColor: "#e0e0e0",
+  },
+  headerButtons: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
     color: "#333",
+    paddingRight: 10,
+    paddingLeft: 1,
   },
   addButton: {
     backgroundColor: "#007AFF",
@@ -559,6 +590,19 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
     paddingTop: 15,
+  },
+  backupButton: {
+    backgroundColor: "#6c757d",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    minWidth: 40,
+    minHeight: 40,
+  },
+  backupButtonText: {
+    fontSize: 16,
   },
   friendItem: {
     backgroundColor: "white",

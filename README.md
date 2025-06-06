@@ -1,9 +1,44 @@
+# Friend Reminder App
+
+A React Native app that helps you keep track of when to reach out to your friends based on custom time intervals.
+
+## Features
+
+- **Friend Management**: Add friends with custom contact methods and reminder frequencies
+- **Smart Reminders**: See who you need to contact and when
+- **Backup & Restore**: Export your friend data to JSON files and restore from backups
+- **Cross-Platform**: Works on Android, iOS, and web
+
+## Getting Started
+
 Using Expo as my react native framework
 
 install watchman (sudo apt install watchman) and android studio. Follow steps in https://docs.expo.dev/get-started/create-a-project/ and https://docs.expo.dev/get-started/set-up-your-environment/?mode=development-build&buildEnv=local
 
 `npx expo run:android` installs and starts the android app over usb.
 `npx expo start --web` starts the web version
+
+## Backup Feature
+
+The app includes a comprehensive backup system that allows you to:
+
+### Export Data
+- Tap the ⚙️ settings icon in the top-right corner
+- Select "Export Backup" to create a JSON backup file
+- Share the backup file via email, cloud storage, or save locally
+- Backup includes all friend data: names, contact methods, frequencies, and last contact dates
+
+### Import Data
+- Tap the ⚙️ settings icon and select "Import Backup"
+- Choose a previously exported backup file
+- All current data will be replaced with the backup data
+- A confirmation dialog will show backup details before importing
+
+### Backup File Format
+- Files are saved in JSON format with `.json` extension
+- Includes version information and timestamp
+- Can be opened in any text editor for manual inspection
+- Compatible across different devices and platforms
 
 This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
 
