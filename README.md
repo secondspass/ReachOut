@@ -2,6 +2,8 @@
 
 A React Native app that helps you keep track of when to reach out to your friends based on custom time intervals.
 
+Currently only tested for Android
+
 ## Features
 
 - **Friend Management**: Add friends with custom contact methods and reminder frequencies
@@ -9,14 +11,6 @@ A React Native app that helps you keep track of when to reach out to your friend
 - **Backup & Restore**: Export your friend data to JSON files and restore from backups
 - **Cross-Platform**: Works on Android, iOS, and web
 
-## Getting Started
-
-Using Expo as my react native framework
-
-install watchman (sudo apt install watchman) and android studio. Follow steps in https://docs.expo.dev/get-started/create-a-project/ and https://docs.expo.dev/get-started/set-up-your-environment/?mode=development-build&buildEnv=local
-
-`npx expo run:android` installs and starts the android app over usb.
-`npx expo start --web` starts the web version
 
 ## Backup Feature
 
@@ -40,100 +34,61 @@ The app includes a comprehensive backup system that allows you to:
 - Can be opened in any text editor for manual inspection
 - Compatible across different devices and platforms
 
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Development
+## Getting Started
 
-# Getting Started
+Using Expo as my react native framework
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+install watchman (`sudo apt install watchman`) and android studio. Follow steps in https://docs.expo.dev/get-started/create-a-project/ and https://docs.expo.dev/get-started/set-up-your-environment/?mode=development-build&buildEnv=local
 
-## Step 1: Start Metro
+Make sure your phone has USB debugging turned on, and is visible in `adb devices` when you plug it into your computer. You need the phone plugged in for Expo to install it.
+`npx expo run:android` installs and starts the android app over usb.
+`npx expo start --web` starts the web version
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
-
-To start the Metro dev server, run the following command from the root of your React Native project:
-
-```sh
-# Using npm
-npm start
-
-# OR using Yarn
-yarn start
+## Step 1: Install dependencies
+```
+npm install
 ```
 
-## Step 2: Build and run your app
+## Step 2: Run Expo build server
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
-
-```sh
-# Using npm
-npm run android
-
-# OR using Yarn
-yarn android
 ```
-
-### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
+npx expo run:android
+# or for installing non-debug app
+npx expo run:android --variant release
 ```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
-```
-
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
-
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
 
 ## Step 3: Modify your app
 
 Now that you have successfully run the app, let's make changes!
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+Modify the files under the `app` directory. Those are the source files.The development server will
+detect the changes automatically and reload.
+
 
 When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
 
 - **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
 - **iOS**: Press <kbd>R</kbd> in iOS Simulator.
 
+## Step 4 (optional): Clean up to refresh assets (in case your changes aren't loading properly)
+
+In case the live reloading isn't working, its likely because the assets are being placed over the
+older ones and as a result we're seeing unexpected behavior.
+
+To delete the old builds
+```
+npx expo prebuild --clean
+```
+
+Then start the development server/install the app again
+```
+npm expo run:android --variant release
+```
+
+## Step 5 (optional): Generate an APK file
+
+
 ## Congratulations! :tada:
 
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+You've successfully run and modified your React Native App. :partying_face:. The app will persist on your phone after you close the development server.

@@ -78,15 +78,15 @@ export default function App() {
     }
   }, [friends]); // saveFriends only changes when friends changes
 
-  // Now include saveFriends in the dependency array
-  useEffect(() => {
-    saveFriends();
-  }, [saveFriends]);
-
   // Load friends from storage when app starts
   useEffect(() => {
     loadFriends();
   }, []);
+
+  // Now include saveFriends in the dependency array
+  useEffect(() => {
+    saveFriends();
+  }, [saveFriends]);
 
   /**
    * Calculate days remaining until next contact
