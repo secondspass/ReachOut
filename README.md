@@ -4,6 +4,8 @@ A React Native app that helps you keep track of when to reach out to your friend
 
 Currently only tested for Android
 
+Mostly written by AI. I can't really claim credit for this.
+
 ## Features
 
 - **Friend Management**: Add friends with custom contact methods and reminder frequencies
@@ -89,6 +91,8 @@ npm expo run:android --variant release
 ## Step 5 (optional): Generate an APK file
 
 
-## Congratulations! :tada:
 
-You've successfully run and modified your React Native App. :partying_face:. The app will persist on your phone after you close the development server.
+# TODOs
+- refactor to use Stacks. Add the settings page in a Stack page
+- put back up and restore in a Modal in the settings Stack page
+- adjust text box size for custom number of days optional
