@@ -95,7 +95,7 @@ npm expo run:android --variant release
 # TODOs
 - [ ] refactor to use Stacks. Add the settings page in a Stack page
 - [ ] put back up and restore in a Modal in the settings Stack page
-- [ ] adjust text box size for custom number of days optional
+- [x] adjust text box size for custom number of days optional
 - [ ] change logo of backup restore option to something that communicates that it is backup/restore
 - [ ] change app icon to something that is CC licensed or public domain
 - [x] update view (update all the countdowns) every time the app is brought to foreground (currently it only updates when you restart, or you press some button within the app) (use https://reactnative.dev/docs/appstate)

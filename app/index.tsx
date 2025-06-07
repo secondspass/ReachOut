@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -548,9 +548,9 @@ function FriendModal({
                 style={styles.customDaysInput}
                 value={customDays}
                 onChangeText={handleCustomDaysChange}
-                placeholder="7"
                 keyboardType="numeric"
                 maxLength={4}
+                placeholder="N"
               />
               <Text style={styles.customInputLabel}>days</Text>
             </View>
@@ -725,7 +725,6 @@ const styles = StyleSheet.create({
   modalContent: {
     flex: 1,
     paddingHorizontal: 20,
-    paddingTop: 20,
   },
   fieldLabel: {
     fontSize: 16,
@@ -772,19 +771,21 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   customInputLabel: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: "600",
     color: "#333",
-    marginBottom: 8,
+    marginBottom: 4,
+    marginTop: 4,
   },
   customDaysInput: {
     backgroundColor: "white",
-    borderRadius: 2,
-    paddingHorizontal: 1,
+    borderRadius: 8,
+    paddingHorizontal: 5,
     paddingVertical: 2,
     fontSize: 16,
     borderWidth: 1,
     borderColor: "#e0e0e0",
     textAlign: "left",
+    width: "15%",
   },
 });
