@@ -93,6 +93,7 @@ npm expo run:android --variant release
 
 
 # TODOs
-- refactor to use Stacks. Add the settings page in a Stack page
-- put back up and restore in a Modal in the settings Stack page
-- adjust text box size for custom number of days optional
+- [ ] refactor to use Stacks. Add the settings page in a Stack page
+- [ ] put back up and restore in a Modal in the settings Stack page
+- [ ] adjust text box size for custom number of days optional
+- [ ] push to github
