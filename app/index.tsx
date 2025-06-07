@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -6,9 +6,11 @@ import {
   TouchableOpacity,
   FlatList,
   StyleSheet,
+  AppState,
   Alert,
   Modal,
   ScrollView,
+  AppStateStatus,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import BackupModal from "./components/BackupModal";
@@ -47,11 +49,31 @@ const CONTACT_METHODS = [
   "Video call",
 ];
 
+function useAppState() {
+  const currentState = AppState.currentState;
+  const [appState, setAppState] = useState(currentState);
+
+  useEffect(() => {
+    function onChange(newState: AppStateStatus) {
+      setAppState(newState);
+    }
+
+    const subscription = AppState.addEventListener("change", onChange);
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
+  return appState;
+}
+
 export default function App() {
   const [friends, setFriends] = useState<Friend[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [editingFriend, setEditingFriend] = useState<Friend | null>(null);
   const [backupModalVisible, setBackupModalVisible] = useState(false);
+  const currentAppState = useAppState();
 
   /**
    * Load friends data from AsyncStorage
@@ -87,6 +109,14 @@ export default function App() {
   useEffect(() => {
     saveFriends();
   }, [saveFriends]);
+
+  // rerender when app is brought to foreground
+  useEffect(() => {
+    if (currentAppState === "active") {
+      console.log("App is active, refreshing...");
+      loadFriends();
+    }
+  }, [currentAppState]);
 
   /**
    * Calculate days remaining until next contact
