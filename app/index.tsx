@@ -114,7 +114,6 @@ export default function App() {
   useEffect(() => {
     if (currentAppState === "active") {
       console.log("App is active, refreshing...");
-      loadFriends();
     }
   }, [currentAppState]);
 
