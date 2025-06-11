@@ -1,34 +1,18 @@
-# Friend Reminder App
+# ReachOut
 
 A React Native app that helps you keep track of when to reach out to your friends based on custom time intervals.
 
 Currently only tested for Android
 
-Mostly written by AI. I can't really claim credit for this.
+Mostly written by AI. I can't really claim credit for this. I've wanted something like this for a
+while and this made it a lot easier to put together.
 
 ## Features
 
 - **Friend Management**: Add friends with custom contact methods and reminder frequencies
-- **Smart Reminders**: See who you need to contact and when
 - **Backup & Restore**: Export your friend data to JSON files and restore from backups
-- **Cross-Platform**: Works on Android, iOS, and web
 
 
-## Backup Feature
-
-The app includes a comprehensive backup system that allows you to:
-
-### Export Data
-- Tap the ⚙️ settings icon in the top-right corner
-- Select "Export Backup" to create a JSON backup file
-- Share the backup file via email, cloud storage, or save locally
-- Backup includes all friend data: names, contact methods, frequencies, and last contact dates
-
-### Import Data
-- Tap the ⚙️ settings icon and select "Import Backup"
-- Choose a previously exported backup file
-- All current data will be replaced with the backup data
-- A confirmation dialog will show backup details before importing
 
 ### Backup File Format
 - Files are saved in JSON format with `.json` extension
@@ -88,7 +72,6 @@ Then start the development server/install the app again
 npm expo run:android --variant release
 ```
 
-## Step 5 (optional): Generate an APK file
 
 
 
