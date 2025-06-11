@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -12,22 +12,9 @@ import {
   ScrollView,
   AppStateStatus,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import BackupModal from "./components/BackupModal";
-
-// Type definitions for our data structures
-interface Friend {
-  id: string;
-  name: string;
-  contactMethod: string;
-  frequencyDays: number;
-  lastContactDate: string;
-}
-
-interface FrequencyOption {
-  label: string;
-  days: number;
-}
+import { Friend, FrequencyOption } from "../utils/interfaces";
+import { useRouter } from "expo-router";
+import { loadFriends, saveFriends } from "../utils/dataoperations";
 
 // Predefined frequency options
 const FREQUENCY_OPTIONS: FrequencyOption[] = [
@@ -72,43 +59,33 @@ export default function App() {
   const [friends, setFriends] = useState<Friend[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [editingFriend, setEditingFriend] = useState<Friend | null>(null);
-  const [backupModalVisible, setBackupModalVisible] = useState(false);
   const currentAppState = useAppState();
+  const router = useRouter();
 
   /**
    * Load friends data from AsyncStorage
    */
-  const loadFriends = async () => {
-    try {
-      const savedFriends = await AsyncStorage.getItem("friends");
-      if (savedFriends) {
-        setFriends(JSON.parse(savedFriends));
-      }
-    } catch (error) {
-      console.error("Error loading friends:", error);
-    }
-  };
 
   /**
    * Save friends data to AsyncStorage
    */
-  const saveFriends = useCallback(async () => {
-    try {
-      await AsyncStorage.setItem("friends", JSON.stringify(friends));
-    } catch (error) {
-      console.error("Error saving friends:", error);
-    }
-  }, [friends]); // saveFriends only changes when friends changes
+  // const saveFriends = useCallback(async () => {
+  //   try {
+  //     await AsyncStorage.setItem("friends", JSON.stringify(friends));
+  //   } catch (error) {
+  //     console.error("Error saving friends:", error);
+  //   }
+  // }, [friends]); // saveFriends only changes when friends changes
 
   // Load friends from storage when app starts
   useEffect(() => {
-    loadFriends();
+    loadFriends(setFriends);
   }, []);
 
   // Now include saveFriends in the dependency array
   useEffect(() => {
-    saveFriends();
-  }, [saveFriends]);
+    saveFriends(friends);
+  }, [friends]);
 
   // rerender when app is brought to foreground
   useEffect(() => {
@@ -206,13 +183,6 @@ export default function App() {
   };
 
   /**
-   * Handle data changes from backup operations
-   */
-  const handleBackupDataChanged = async () => {
-    await loadFriends();
-  };
-
-  /**
    * Render individual friend item in the list
    */
   const renderFriendItem = ({ item }: { item: Friend }) => {
@@ -268,10 +238,10 @@ export default function App() {
         <Text style={styles.title}>Friend Contact Tracker</Text>
         <View style={styles.headerButtons}>
           <TouchableOpacity
-            style={styles.backupButton}
-            onPress={() => setBackupModalVisible(true)}
+            style={styles.settingsButton}
+            onPress={() => router.navigate("/settings")}
           >
-            <Text style={styles.backupButtonText}>⚙️</Text>
+            <Text style={styles.settingsButtonText}>⚙️</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.addButton} onPress={addNewFriend}>
             <Text style={styles.addButtonText}>+</Text>
@@ -311,12 +281,6 @@ export default function App() {
           setModalVisible(false);
         }}
         editingFriend={editingFriend}
-      />
-
-      <BackupModal
-        visible={backupModalVisible}
-        onClose={() => setBackupModalVisible(false)}
-        onDataChanged={handleBackupDataChanged}
       />
     </View>
   );
@@ -620,7 +584,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 15,
   },
-  backupButton: {
+  settingsButton: {
     backgroundColor: "#6c757d",
     paddingHorizontal: 12,
     paddingVertical: 8,
@@ -630,7 +594,7 @@ const styles = StyleSheet.create({
     minWidth: 40,
     minHeight: 40,
   },
-  backupButtonText: {
+  settingsButtonText: {
     fontSize: 16,
   },
   friendItem: {

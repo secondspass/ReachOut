@@ -3,14 +3,7 @@ import * as Sharing from "expo-sharing";
 import * as DocumentPicker from "expo-document-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Alert } from "react-native";
-
-export interface Friend {
-  id: string;
-  name: string;
-  contactMethod: string;
-  frequencyDays: number;
-  lastContactDate: string;
-}
+import { Friend } from "../utils/interfaces";
 
 export interface BackupData {
   version: string;
@@ -219,5 +212,3 @@ export class BackupService {
     }
   }
 }
-
-export default function Bs() {}

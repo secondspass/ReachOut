@@ -7,6 +7,10 @@ export default function RootLayout() {
     <ThemeProvider value={DefaultTheme}>
       <Stack>
         <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="settings"
+          options={{ headerShown: true, title: "Settings" }}
+        />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>
