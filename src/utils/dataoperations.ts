@@ -1,5 +1,4 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useCallback } from "react";
 import { Friend } from "./interfaces";
 
 /**

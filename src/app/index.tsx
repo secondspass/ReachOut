@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -6,14 +6,12 @@ import {
   TouchableOpacity,
   FlatList,
   StyleSheet,
-  AppState,
   Alert,
   Modal,
   ScrollView,
-  AppStateStatus,
 } from "react-native";
 import { Friend, FrequencyOption } from "../utils/interfaces";
-import { useRouter } from "expo-router";
+import { Link, useFocusEffect } from "expo-router";
 import { loadFriends, saveFriends } from "../utils/dataoperations";
 
 // Predefined frequency options
@@ -36,31 +34,10 @@ const CONTACT_METHODS = [
   "Video call",
 ];
 
-function useAppState() {
-  const currentState = AppState.currentState;
-  const [appState, setAppState] = useState(currentState);
-
-  useEffect(() => {
-    function onChange(newState: AppStateStatus) {
-      setAppState(newState);
-    }
-
-    const subscription = AppState.addEventListener("change", onChange);
-
-    return () => {
-      subscription.remove();
-    };
-  }, []);
-
-  return appState;
-}
-
 export default function App() {
   const [friends, setFriends] = useState<Friend[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [editingFriend, setEditingFriend] = useState<Friend | null>(null);
-  const currentAppState = useAppState();
-  const router = useRouter();
 
   /**
    * Load friends data from AsyncStorage
@@ -78,21 +55,25 @@ export default function App() {
   // }, [friends]); // saveFriends only changes when friends changes
 
   // Load friends from storage when app starts
-  useEffect(() => {
-    loadFriends(setFriends);
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      loadFriends(setFriends);
+    }, []),
+  );
 
   // Now include saveFriends in the dependency array
-  useEffect(() => {
-    saveFriends(friends);
-  }, [friends]);
+  useFocusEffect(
+    useCallback(() => {
+      saveFriends(friends);
+    }, [friends]),
+  );
 
   // rerender when app is brought to foreground
-  useEffect(() => {
-    if (currentAppState === "active") {
-      console.log("App is active, refreshing...");
-    }
-  }, [currentAppState]);
+  // useEffect(() => {
+  //   if (currentAppState === "active") {
+  //     console.log("App is active, refreshing...");
+  //   }
+  // }, [currentAppState]);
 
   /**
    * Calculate days remaining until next contact
@@ -235,14 +216,11 @@ export default function App() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Friend Contact Tracker</Text>
+        <Text style={styles.title}>ReachOut</Text>
         <View style={styles.headerButtons}>
-          <TouchableOpacity
-            style={styles.settingsButton}
-            onPress={() => router.navigate("/settings")}
-          >
+          <Link href="/settings" asChild style={styles.settingsButton}>
             <Text style={styles.settingsButtonText}>⚙️</Text>
-          </TouchableOpacity>
+          </Link>
           <TouchableOpacity style={styles.addButton} onPress={addNewFriend}>
             <Text style={styles.addButtonText}>+</Text>
           </TouchableOpacity>

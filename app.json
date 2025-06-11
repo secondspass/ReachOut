@@ -1,17 +1,17 @@
 {
   "expo": {
-    "name": "Friend Contact Tracker",
-    "slug": "friendreminderandroid",
-    "version": "1.0.1",
+    "name": "ReachOut",
+    "slug": "reachout",
+    "version": "2.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "friendreminderandroid",
+    "scheme": "reachout",
     "jsEngine": "hermes",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.friendreminderandroid"
+      "bundleIdentifier": "com.secondspass.reachout"
     },
     "android": {
       "adaptiveIcon": {
@@ -19,7 +19,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.anonymous.friendreminderandroid"
+      "package": "com.secondspass.reachout"
     },
     "web": {
       "bundler": "metro",

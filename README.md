@@ -93,10 +93,13 @@ npm expo run:android --variant release
 
 
 # TODOs
-- [ ] refactor to use Stacks. Add the settings page in a Stack page
-- [ ] put back up and restore in a Modal in the settings Stack page
+- [x] refactor to use Stacks. Add the settings page in a Stack page
+- [x] put back up and restore in a Modal in the settings Stack page
 - [x] adjust text box size for custom number of days optional
-- [ ] change logo of backup restore option to something that communicates that it is backup/restore
+- [x] change logo of backup restore option to something that communicates that it is backup/restore
 - [ ] change app icon to something that is CC licensed or public domain
 - [x] update view (update all the countdowns) every time the app is brought to foreground (currently it only updates when you restart, or you press some button within the app) (use https://reactnative.dev/docs/appstate)
-- [ ] change name to ReachOut
+- [x] change name to ReachOut
+- [x] use this stackoverflow https://stackoverflow.com/a/61975683 to rerender the main page when
+  returning from backup and restore
+- [x] change route.navigate to Link to go to settings page

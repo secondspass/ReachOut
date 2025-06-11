@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-
+import { Image } from "expo-image";
 import BackupModal from "../components/BackupModal";
 
 export default function SettingsPage() {
@@ -17,6 +17,10 @@ export default function SettingsPage() {
         style={styles.settingsOption}
         onPress={() => setBackupModalVisible(true)}
       >
+        <Image
+          source={require("../../assets/images/backuprestore.png")}
+          style={{ width: 24, height: 24, marginRight: 12 }}
+        />
         <Text style={styles.settingsText}>Backup and Restore</Text>
       </TouchableOpacity>
       <BackupModal
@@ -37,6 +41,8 @@ const styles = StyleSheet.create({
     borderBottomColor: "#e9ecef",
     marginHorizontal: 16,
     marginVertical: 4,
+    flexDirection: "row",
+    alignItems: "center",
     borderRadius: 8,
   },
   settingsText: {
