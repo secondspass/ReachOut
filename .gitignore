@@ -42,3 +42,4 @@ app-example
 android/
 ios/
 .vscode
+*~
