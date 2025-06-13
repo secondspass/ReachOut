@@ -33,7 +33,7 @@ export class BackupService {
 
       // Generate filename with timestamp
       const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-      const filename = `friend-reminder-backup-${timestamp}.json`;
+      const filename = `ReachOut-backup-${timestamp}.json`;
       const fileUri = `${FileSystem.documentDirectory}${filename}`;
 
       // Write backup data to file
@@ -100,7 +100,7 @@ export class BackupService {
       if (!this.validateBackupData(backupData)) {
         Alert.alert(
           "Invalid Backup File",
-          "The selected file is not a valid Friend Reminder backup.",
+          "The selected file is not a valid ReachOut backup.",
           [{ text: "OK" }],
         );
         return false;
