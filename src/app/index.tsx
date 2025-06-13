@@ -9,7 +9,9 @@ import {
   Alert,
   Modal,
   ScrollView,
+  Platform,
 } from "react-native";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { Friend, FrequencyOption } from "../utils/interfaces";
 import { Link, useFocusEffect } from "expo-router";
 import { loadFriends, saveFriends } from "../utils/dataoperations";
@@ -79,11 +81,31 @@ export default function App() {
    * Calculate days remaining until next contact
    */
   const getDaysUntilContact = (friend: Friend): number => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset time to start of day for accurate comparison
+    
+    const firstContact = new Date(friend.firstContactDate);
+    firstContact.setHours(0, 0, 0, 0);
+    
     const lastContact = new Date(friend.lastContactDate);
+    lastContact.setHours(0, 0, 0, 0);
+    
+    // If we haven't reached the first contact date yet, return days until first contact
+    if (today < firstContact) {
+      const diffTime = firstContact.getTime() - today.getTime();
+      return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    }
+    
+    // If the last contact date is the same as first contact date and it's today or past,
+    // and we haven't actually contacted them yet, show that we should contact today
+    if (lastContact.getTime() === firstContact.getTime() && today >= firstContact) {
+      return 0; // Contact today!
+    }
+    
+    // Calculate next contact based on last contact + frequency
     const nextContact = new Date(
       lastContact.getTime() + friend.frequencyDays * 24 * 60 * 60 * 1000,
     );
-    const today = new Date();
     const diffTime = nextContact.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return diffDays;
@@ -92,13 +114,20 @@ export default function App() {
   /**
    * Get display text for days remaining
    */
-  const getDaysText = (daysRemaining: number): string => {
+  const getDaysText = (daysRemaining: number, friend: Friend): string => {
+    const today = new Date();
+    const firstContact = new Date(friend.firstContactDate);
+    const lastContact = new Date(friend.lastContactDate);
+    
+    // Check if this is the initial contact
+    const isInitialContact = lastContact.getTime() === new Date(friend.firstContactDate).getTime();
+    
     if (daysRemaining < 0) {
       return `${Math.abs(daysRemaining)} days overdue`;
     } else if (daysRemaining === 0) {
-      return "Contact today!";
+      return isInitialContact && today >= firstContact ? "First contact today!" : "Contact today!";
     } else {
-      return `${daysRemaining} days left`;
+      return isInitialContact ? `First contact in ${daysRemaining} days` : `${daysRemaining} days left`;
     }
   };
 
@@ -116,10 +145,11 @@ export default function App() {
    * Mark a friend as contacted today
    */
   const markAsContacted = (friendId: string) => {
+    const today = new Date();
     setFriends((prevFriends) =>
       prevFriends.map((friend) =>
         friend.id === friendId
-          ? { ...friend, lastContactDate: new Date().toISOString() }
+          ? { ...friend, lastContactDate: today.toISOString() }
           : friend,
       ),
     );
@@ -168,7 +198,7 @@ export default function App() {
    */
   const renderFriendItem = ({ item }: { item: Friend }) => {
     const daysRemaining = getDaysUntilContact(item);
-    const daysText = getDaysText(daysRemaining);
+    const daysText = getDaysText(daysRemaining, item);
     const daysColor = getDaysColor(daysRemaining);
 
     return (
@@ -285,6 +315,8 @@ function FriendModal({
   const [frequencyDays, setFrequencyDays] = useState(FREQUENCY_OPTIONS[2].days); // Default to weekly
   const [customDays, setCustomDays] = useState("");
   const [isCustomSelected, setIsCustomSelected] = useState(false);
+  const [firstContactDate, setFirstContactDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   // Reset form when modal opens/closes or editing friend changes
   useEffect(() => {
@@ -292,6 +324,7 @@ function FriendModal({
       if (editingFriend) {
         setName(editingFriend.name);
         setContactMethod(editingFriend.contactMethod);
+        setFirstContactDate(new Date(editingFriend.firstContactDate));
 
         // Check if the frequency matches a predefined option
         const predefinedOption = FREQUENCY_OPTIONS.find(
@@ -313,6 +346,7 @@ function FriendModal({
         setFrequencyDays(FREQUENCY_OPTIONS[2].days);
         setIsCustomSelected(false);
         setCustomDays("");
+        setFirstContactDate(new Date());
       }
     }
   }, [visible, editingFriend]);
@@ -348,6 +382,27 @@ function FriendModal({
   };
 
   /**
+   * Handle date picker change
+   */
+  const handleDateChange = (event: any, selectedDate?: Date) => {
+    const currentDate = selectedDate || firstContactDate;
+    setShowDatePicker(Platform.OS === 'ios');
+    setFirstContactDate(currentDate);
+  };
+
+  /**
+   * Format date for display
+   */
+  const formatDate = (date: Date): string => {
+    return date.toLocaleDateString('en-US', {
+      weekday: 'short',
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
+  /**
    * Handle saving the friend
    */
   const handleSave = () => {
@@ -374,8 +429,9 @@ function FriendModal({
       name: name.trim(),
       contactMethod,
       frequencyDays: isCustomSelected ? parseInt(customDays) : frequencyDays,
+      firstContactDate: firstContactDate.toISOString(),
       lastContactDate:
-        editingFriend?.lastContactDate || new Date().toISOString(),
+        editingFriend?.lastContactDate || firstContactDate.toISOString(),
     };
 
     onSave(friend);
@@ -412,6 +468,27 @@ function FriendModal({
             onChangeText={setName}
             placeholder="Enter friend's name"
           />
+
+          <Text style={styles.fieldLabel}>First Contact Date</Text>
+          <Text style={styles.fieldDescription}>
+            When should you first contact this friend?
+          </Text>
+          <TouchableOpacity
+            style={styles.datePickerButton}
+            onPress={() => setShowDatePicker(true)}
+          >
+            <Text style={styles.datePickerText}>{formatDate(firstContactDate)}</Text>
+          </TouchableOpacity>
+          
+          {showDatePicker && (
+            <DateTimePicker
+              value={firstContactDate}
+              mode="date"
+              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+              onChange={handleDateChange}
+              minimumDate={new Date()}
+            />
+          )}
 
           <Text style={styles.fieldLabel}>Contact Method</Text>
           <View style={styles.optionsContainer}>
@@ -681,7 +758,25 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     fontSize: 16,
     borderWidth: 1,
-    borderColor: "#e0e0e0",
+    borderColor: "#ddd",
+  },
+  datePickerButton: {
+    backgroundColor: "white",
+    borderRadius: 8,
+    paddingHorizontal: 15,
+    paddingVertical: 12,
+    borderWidth: 1,
+    borderColor: "#ddd",
+  },
+  datePickerText: {
+    fontSize: 16,
+    color: "#333",
+  },
+  fieldDescription: {
+    fontSize: 14,
+    color: "#666",
+    marginBottom: 8,
+    marginTop: -5,
   },
   optionsContainer: {
     flexDirection: "row",

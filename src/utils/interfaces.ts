@@ -4,6 +4,7 @@ export interface Friend {
   name: string;
   contactMethod: string;
   frequencyDays: number;
+  firstContactDate: string;
   lastContactDate: string;
 }
 

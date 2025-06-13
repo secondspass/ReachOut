@@ -10,7 +10,18 @@ export const loadFriends = async (
   try {
     const savedFriends = await AsyncStorage.getItem("friends");
     if (savedFriends) {
-      setFriends(JSON.parse(savedFriends));
+      const friends: Friend[] = JSON.parse(savedFriends);
+      // Migrate existing friends without firstContactDate
+      const migratedFriends = friends.map(friend => {
+        if (!friend.firstContactDate) {
+          return {
+            ...friend,
+            firstContactDate: friend.lastContactDate || new Date().toISOString()
+          };
+        }
+        return friend;
+      });
+      setFriends(migratedFriends);
     }
   } catch (error) {
     console.error("Error loading friends:", error);
