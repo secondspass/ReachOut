@@ -86,3 +86,9 @@ npm expo run:android --variant release
 - [x] use this stackoverflow https://stackoverflow.com/a/61975683 to rerender the main page when
   returning from backup and restore
 - [x] change route.navigate to Link to go to settings page
+- [ ] add feature to set the first contact date and then contact at a regular recurrence after that
+- [ ] redo datetimepicker by hand
+- [ ] add logo to left of header
+- [ ] add search function that will quickly filter list as you type
+- [ ] add tests
+
