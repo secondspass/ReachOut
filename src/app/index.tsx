@@ -40,6 +40,8 @@ export default function App() {
   const [friends, setFriends] = useState<Friend[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [editingFriend, setEditingFriend] = useState<Friend | null>(null);
+  const [searchVisible, setSearchVisible] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   /**
    * Load friends data from AsyncStorage
@@ -235,9 +237,16 @@ export default function App() {
   };
 
   /**
+   * Filter friends based on search query
+   */
+  const filteredFriends = friends.filter((friend) =>
+    friend.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  /**
    * Sort friends by days remaining (overdue first, then by urgency)
    */
-  const sortedFriends = [...friends].sort((a, b) => {
+  const sortedFriends = [...filteredFriends].sort((a, b) => {
     const aDays = getDaysUntilContact(a);
     const bDays = getDaysUntilContact(b);
     return aDays - bDays;
@@ -248,6 +257,12 @@ export default function App() {
       <View style={styles.header}>
         <Text style={styles.title}>ReachOut</Text>
         <View style={styles.headerButtons}>
+          <TouchableOpacity 
+            style={styles.searchButton} 
+            onPress={() => setSearchVisible(!searchVisible)}
+          >
+            <Text style={styles.searchButtonText}>🔍</Text>
+          </TouchableOpacity>
           <Link href="/settings" asChild style={styles.settingsButton}>
             <Text style={styles.settingsButtonText}>⚙️</Text>
           </Link>
@@ -257,11 +272,39 @@ export default function App() {
         </View>
       </View>
 
+      {searchVisible && (
+        <View style={styles.searchContainer}>
+          <TextInput
+            style={styles.searchInput}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholder="Search friends..."
+            autoFocus
+          />
+          <TouchableOpacity
+            style={styles.searchClearButton}
+            onPress={() => {
+              setSearchQuery("");
+              setSearchVisible(false);
+            }}
+          >
+            <Text style={styles.searchClearText}>✕</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
       {friends.length === 0 ? (
         <View style={styles.emptyState}>
           <Text style={styles.emptyText}>No friends added yet.</Text>
           <Text style={styles.emptySubtext}>
             Tap the + button to get started!
+          </Text>
+        </View>
+      ) : sortedFriends.length === 0 ? (
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyText}>No friends found.</Text>
+          <Text style={styles.emptySubtext}>
+            Try adjusting your search terms.
           </Text>
         </View>
       ) : (
@@ -651,6 +694,46 @@ const styles = StyleSheet.create({
   },
   settingsButtonText: {
     fontSize: 16,
+  },
+  searchButton: {
+    backgroundColor: "#28a745",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    minWidth: 40,
+    minHeight: 40,
+  },
+  searchButtonText: {
+    fontSize: 16,
+  },
+  searchContainer: {
+    backgroundColor: "white",
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#e0e0e0",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  searchInput: {
+    flex: 1,
+    backgroundColor: "#f8f9fa",
+    borderRadius: 8,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    fontSize: 16,
+    borderWidth: 1,
+    borderColor: "#e0e0e0",
+  },
+  searchClearButton: {
+    padding: 8,
+  },
+  searchClearText: {
+    fontSize: 16,
+    color: "#666",
   },
   friendItem: {
     backgroundColor: "white",
