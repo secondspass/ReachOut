@@ -39,6 +39,7 @@ export default function App() {
   const [modalVisible, setModalVisible] = useState(false);
   const [editingFriend, setEditingFriend] = useState<Friend | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [showSearch, setShowSearch] = useState(false);
 
   /**
    * Load friends data from AsyncStorage
@@ -149,6 +150,16 @@ export default function App() {
   };
 
   /**
+   * Toggle search bar visibility
+   */
+  const toggleSearch = () => {
+    setShowSearch(!showSearch);
+    if (showSearch) {
+      setSearchQuery("");
+    }
+  };
+
+  /**
    * Open modal to add a new friend
    */
   const addNewFriend = () => {
@@ -229,21 +240,27 @@ export default function App() {
           <Link href="/settings" asChild style={styles.settingsButton}>
             <Text style={styles.settingsButtonText}>⚙️</Text>
           </Link>
+          <TouchableOpacity style={styles.searchButton} onPress={toggleSearch}>
+            <Text style={styles.searchButtonText}>🔍</Text>
+          </TouchableOpacity>
           <TouchableOpacity style={styles.addButton} onPress={addNewFriend}>
             <Text style={styles.addButtonText}>+</Text>
           </TouchableOpacity>
         </View>
       </View>
 
-      <View style={styles.searchContainer}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search friends..."
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          placeholderTextColor="#999"
-        />
-      </View>
+      {showSearch && (
+        <View style={styles.searchContainer}>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search friends..."
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholderTextColor="#999"
+            autoFocus
+          />
+        </View>
+      )}
 
       {filteredFriends.length === 0 ? (
         <View style={styles.emptyState}>
@@ -609,6 +626,19 @@ const styles = StyleSheet.create({
     minHeight: 40,
   },
   settingsButtonText: {
+    fontSize: 16,
+  },
+  searchButton: {
+    backgroundColor: "#6c757d",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    minWidth: 40,
+    minHeight: 40,
+  },
+  searchButtonText: {
     fontSize: 16,
   },
   friendItem: {
