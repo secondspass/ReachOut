@@ -38,6 +38,7 @@ export default function App() {
   const [friends, setFriends] = useState<Friend[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [editingFriend, setEditingFriend] = useState<Friend | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   /**
    * Load friends data from AsyncStorage
@@ -205,9 +206,16 @@ export default function App() {
   };
 
   /**
+   * Filter friends based on search query
+   */
+  const filteredFriends = friends.filter(friend =>
+    friend.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  /**
    * Sort friends by days remaining (overdue first, then by urgency)
    */
-  const sortedFriends = [...friends].sort((a, b) => {
+  const sortedFriends = [...filteredFriends].sort((a, b) => {
     const aDays = getDaysUntilContact(a);
     const bDays = getDaysUntilContact(b);
     return aDays - bDays;
@@ -227,11 +235,23 @@ export default function App() {
         </View>
       </View>
 
-      {friends.length === 0 ? (
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search friends..."
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholderTextColor="#999"
+        />
+      </View>
+
+      {filteredFriends.length === 0 ? (
         <View style={styles.emptyState}>
-          <Text style={styles.emptyText}>No friends added yet.</Text>
+          <Text style={styles.emptyText}>
+            {friends.length === 0 ? "No friends added yet." : "No friends found."}
+          </Text>
           <Text style={styles.emptySubtext}>
-            Tap the + button to get started!
+            {friends.length === 0 ? "Tap the + button to get started!" : "Try a different search term."}
           </Text>
         </View>
       ) : (
@@ -517,6 +537,22 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderBottomWidth: 1,
     borderBottomColor: "#e0e0e0",
+  },
+  searchContainer: {
+    backgroundColor: "white",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#e0e0e0",
+  },
+  searchInput: {
+    backgroundColor: "#f8f9fa",
+    borderRadius: 8,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    fontSize: 16,
+    borderWidth: 1,
+    borderColor: "#e0e0e0",
   },
   headerButtons: {
     flexDirection: "row",
